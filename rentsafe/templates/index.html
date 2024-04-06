@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login and Register Forms</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="script.js"></script>
+</head>
+<body>
+    <div class="container">
+        <button id="login-btn">Login</button>
+        <button id="register-btn">Register</button>
+
+        <!-- Login form popup -->
+        <div id="login-popup" class="form-popup">
+            <span class="close-btn" onclick="closePopup('login-popup')">&times;</span>
+            <h2>Login Form</h2>
+            <form>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password">
+                <button type="submit">Login</button>
+            </form>
+        </div>
+
+        <!-- Register form popup -->
+        <div id="register-popup" class="form-popup">
+            <span class="close-btn" onclick="closePopup('register-popup')">&times;</span>
+            <h2>Register Form</h2>
+            <form>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password">
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

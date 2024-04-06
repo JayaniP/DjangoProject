@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> </head>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+</head>
+<body>
+    <h3> <center> <u> Make a Claim </u></center></h3>
+    <br/>
+    <div class="container">
+      <form id ="claim_form" method="POST" action="{% url 'make_claim' %}" enctype="multipart/form-data" class="was-validated" novalidate="">
+        {% csrf_token %}
+        <!-- Four equal columns -->
+            <div class="row">
+                <div class="col">
+                    <input type="hidden" class="form-control" id="transaction_id" name="transaction_id" value="{{ transaction_obj.pk }}">
+                    <div class="form-group">
+                        <label>Claimants Full Name</label>
+                        <input type="text" name = "name" id="name" class="form-control" placeholder="Enter Claimants Full Name" required autofocus>
+                      </div><br/>
+                      <div class="form-group">
+                        <label>Claimants Conatct Number</label>
+                        <input type="number" name="contact" id="contact" class="form-control" placeholder="Enter Claimants Conatct" required autofocus>
+                      </div><br/>
+                      <div class="form-group">
+                        <label>Claimants Email</label>
+                        <input type="email" name="email" id="email" class="form-control" placeholder="Enter Claimants Email" required autofocus>
+                      </div><br/>
+                      <div class="form-group">
+                        <label>Claimants Full Address</label>
+                        <textarea class="form-control" name="address" id="address" rows="4" placeholder="Enter Claimants Address" required autofocus></textarea>
+                      </div><br/>
+                      <div class="form-group">
+                        <label>Claimant Management Contact Email</label>
+                        <input type="email" name="management_email" id="management_email" class="form-control" placeholder="Enter Claimant Management Email" required autofocus>
+                      </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label>Clients Full Name</label>
+                        <input type="text" name="cname" id="cname" class="form-control" placeholder="Enter Clients Full Name" required autofocus>
+                      </div><br/>
+                      <div class="form-group">
+                        <label>Clients Contact Number</label>
+                        <input type="number" name="ccontact" id="ccontact" class="form-control" placeholder="Enter Clients Contact" required autofocus>
+                      </div><br/>
+                      <div class="form-group">
+                        <label>Clients Email</label>
+                        <input type="email" name="cemail" id="cemail" class="form-control" placeholder="Enter Clients Email" required autofocus>
+                      </div><br/>
+                      <div class="form-group">
+                        <label>Clients Booking Start Date</label>
+                        <input type="date" name="start_date" id ="sdate" class="form-control">
+                      </div><br/>
+                      <div class="form-group">
+                        <label>Clients Booking End Date</label>
+                        <input type="date" name="end_date" id ="edate" class="form-control">
+                      </div>
+                </div>
+                <div class="col">
+                     <div class="form-group">
+                        <label>Estimated Quote of Repair or Replacement</label>
+                        <input type="file" name="quote_deatils" class="form-control" >
+                      </div><br/>
+                      <div class="form-group">
+                        <label>Detailed Statement and description of damage</label>
+                        <input type="file" name="statement_description" class="form-control" >
+                      </div><br/>
+                      <div class="form-group">
+                        <label>Pictures of Description</label>
+                        <input type="file" name="pictures_description" class="form-control" multiple >
+                      </div><br/>
+                      <div class="form-group">
+                        <label>Evidence of Damage</label>
+                        <input type="file" name="damage_evidence" class="form-control" >
+                      </div><br/>
+                      <div class="form-group">
+                        <label>Police Report</label>
+                        <input type="file" name="police_report" class="form-control" >
+                      </div>
+                </div> 
+     
+                <div class="col">
+                    <div class="form-group">
+                        Quick and easy search, simply use the reference number provided for the transaction, 
+                        or booking confirmation to easily and fill in the details required.
+                        <br/><br/>
+                        <label>Search Listing Transaction</label>
+                        <input type="number" class="form-control" id="booking_ref_number" placeholder="Reference Number"><br/>
+                        <button type="submit" id="search-button" class="btn btn-primary">Search</button>
+                    </div>
+                    <div class="form-group">
+                        <br/>
+                        <h5>Notice*</h5>
+                        RentSafe may ask for further documentation to assist the adjudicators decisions. I hereby certify that
+                        to the best of my knowledge , the provided information is true and accurate. I recognize that I may be
+                        liable to substantial penalites to anyone who uses this form to provide infromation they know to be false or misleading.
+                        <br/> <br/>
+                        <label><input type="checkbox" required autofocus> I have read and accept the terms and conditions.*</label>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>    
+                </div>
+            </div>
+          </form> 
+    </div>
+</body>
+
+<script>
+  function disableFutureDates() {
+    const today = new Date().getTime();
+    const sinput = document.getElementById("sdate");
+    const einput = document.getElementById("edate");
+    sinput.setAttribute("max", new Date(today).toISOString().split('T')[0]);
+    einput.setAttribute("max", new Date(today).toISOString().split('T')[0]);
+  }
+  
+  disableFutureDates()
+
+  $(document).ready(function() {
+    $('#search-button').click(function() {
+        event.preventDefault();
+       // var transaction_id = $('#transaction_id').val();
+        var refNumber = $('#booking_ref_number').val();
+        $.ajax({
+            url: '/fetch_claim_details/',
+            data: {'booking_ref_number': refNumber},
+            success: function(data) { 
+                $('#name').val(data.name);
+                $('#contact').val(data.contact); 
+                $('#email').val(data.email);
+                $('#address').val(data.address); 
+                $('#management_email').val(data.management_email);
+                $('#cname').val(data.cname); 
+                $('#ccontact').val(data.ccontact);
+                $('#cemail').val(data.cemail); 
+                $('#sdate').val(data.start_date);
+                $('#edate').val(data.end_date); 
+                 // Fill other fields similarly (data.contact, data.email, etc.)
+            },
+            error: function(xhr, textStatus, errorThrown) {
+            // Handle any errors that occur during the AJAX request
+            console.log('Error occurred:', textStatus, errorThrown);
+            console.log('Response text:', xhr.responseText);
+          }
+        });
+    });
+});
+
+
+  </script>
+</html>

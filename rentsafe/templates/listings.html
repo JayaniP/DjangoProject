@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Listing Page</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        .sidebar {
+            width: 200px;
+            height: 100%;
+            position: fixed;
+            background-color: #f8f9fa;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #333;
+            padding: 10px 0;
+            display: block;
+        }
+        .sidebar ul li a:hover {
+            color: #007bff;
+        }
+        .sidebar ul li a.active {
+            color: #007bff;
+        }
+        .main-content {
+            margin-left: 200px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <ul>
+            <li><a href="listings">Listings</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Claims & Disputes</a>
+                <ul class="dropdown-menu">
+                    <li><a href="make_claim">Make Claim</a></li>
+                    <li><a href="dispute_resolution">Dispute Resolution</a></li>
+                </ul>
+            </li>
+            <li><a href="booking">Bookings</a></li>
+            <li><a href="#">Reporting & Analytics</a></li>
+            <li><a href="support">Support</a></li>
+            <li><a href="account">My Account</a></li>
+            <li><a href="signout">Logout</a></li>
+        </ul>
+    </div>
+    <div="bg-light">
+    <div class="container">
+        <div="row">
+            <nav class="nav nav-masthead justify-content-end">
+                {% if request.user.is_authenticated %}
+                    <h2>Hello, {{ request.user.username }} Welcome to the RentSafe !</h2>
+                {% endif %}
+                <!--<a class="nav-link active" href="#">Home</a>
+                <a class="nav-link" href="#">Features</a>
+                <a class="nav-link" href="#">Contact</a>-->
+            </nav>
+    </div>
+    </div>
+
+    <div class="main-content card">
+        <h1></h1>
+        <div class="row">
+            {% for property in property_details %}
+                <div class="col-md-4">
+                    <div class="card">
+                        {% if property.image1 %}
+                            <img src="{{ property.image1.url }}" class="card-img-top" alt="Image 1" width="100" height="130">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{property.name}}</h5>
+                            <p class="card-text">{{property.description}}</p>
+                            <p class="card-text">£{{property.daily_price}}</p>  
+                            <a href="{% url 'add-detail' property_id=property.id  %}" target="_blank" class="btn btn-primary">Add Property Details</a>   
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+<script>
+    $(document).ready(function() {
+        $(".dropdown").click(function() {
+            $(".dropdown-menu").toggle();
+        });
+    });
+</script>
+</html>

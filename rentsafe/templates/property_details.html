@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>eCommerce Product Detail</title>
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+	<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+	<script async src="https://js.stripe.com/v3/buy-button.js">
+</script>
+  </script>
+  <style>
+	    .row {
+  display: -ms-flexbox; /* IE10 */
+  display: flex;
+  -ms-flex-wrap: wrap; /* IE10 */
+  flex-wrap: wrap;
+  margin: 0 -16px;
+}
+
+.col-25 {
+  -ms-flex: 25%; /* IE10 */
+  flex: 25%;
+}
+
+.col-50 {
+  -ms-flex: 50%; /* IE10 */
+  flex: 50%;
+}
+
+.col-75 {
+  -ms-flex: 50%; /* IE10 */
+  flex: 50%;
+}
+
+.col-25,
+.col-50,
+.col-75 {
+  padding: 0 16px;
+}
+
+.btn {
+  background-color: #04AA6D;
+  color: white;
+  padding: 12px;
+  margin: 10px 0;
+  border: none;
+  width: 100%;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 17px;
+}
+
+.btn:hover {
+  background-color: #45a049;
+}
+	@media (max-width: 800px) {
+  .row {
+    flex-direction: column-reverse;
+  }
+  .col-25 {
+    margin-bottom: 20px;
+  }
+}
+  </style>
+</head>
+<body>
+ <div class="row">
+  <div class="col-75">
+	<div class="container">              
+		<div class="card">
+			<div class="container-fliud">
+				<form method="POST" action="{% url 'create_payment_link' %}" class="was-validated" novalidate="">
+					{% csrf_token %}
+					<div class="row">
+							<div class="col-50">
+								<input type="hidden" name="property_id" value="{{ property.id }}"> 
+								<div class="preview-pic tab-content">
+									{% if property.image1 %}
+										<div class="tab-pane active" id="pic-1"><img src="{{ property.image1.url }}" width="550" height="500" /></div>
+									{% endif %}
+								</div>
+								<ul class="preview-thumbnail nav nav-tabs">
+									{% if property.image2 %}
+										<li class="active"><a data-target="#pic-1" data-toggle="tab"><img src="{{ property.image2.url }}" width="150" height="150" /></a></li>
+									{% endif %}
+									
+									{% if property.image3 %}
+										<li><a data-target="#pic-2" data-toggle="tab"><img src="{{ property.image3.url }}" width="150" height="150" /></a></li>
+									{% endif %}
+
+									{% if property.image4 %}
+										<li><a data-target="#pic-3" data-toggle="tab"><img src="{{ property.image4.url }}" width="150" height="150" /></a></li>
+									{% endif %}
+								</ul>
+							</div>
+							<div class="col-25">
+								<a href="{% url 'add-detail' property.id %}" class="edit-btn btn btn-primary">Edit Property Details</a>
+								<p id="name" class="text-info"><b>Property:</b><input type="text" name="name" value="{{property.name}}" disabled></p>
+								<p id="description" class="text-info"><b>Description:</b> {{property.description}}</p>
+								<p id="details" class="text-info"><b>Details :</b>{{property.details}}</p>
+								<p id="details" class="text-info"><b>Start Date:</b><input type="date" name="start_date" id ="sdate" class="form-group"></p>
+								<p id="details" class="text-info"><b>End Date: </b> <input type="date" name="end_date" id ="edate" class="form-group"></p>
+								<p class="text-info"><b>Current Price:</b>£<input type="number" id="price" name="daily_price" value="{{property.daily_price}}"></span>(Per Night)</p><br/>
+								<p class="text-info"><b>Deposit Price:</b>£<input type="number" id="deposit"  name="deposit" value="{{property.deposit}}" ></span></p>
+								<p class="text-info"><b>Amount : £<input type="number" name="total" id="total" ></b></p>
+								<h4 class="text-info"><b><input type="hidden" name="amount" id="amount" ></b></h3>
+							</div>
+                      
+							<div class="col-25">
+								<h3>Client Details</h3>
+								<label for="fname"><i class="fa fa-user"></i> Full Name</label>
+								<input class="form-control" type="text" id="name" name="cname" required autofocus>
+								<label for="email"><i class="fa fa-envelope"></i> Email</label>
+								<input class="form-control" type="email" id="email" name="cemail" required autofocus>
+								<label for="adr"><i class="fa fa-address-card-o"></i> Contact</label>
+								<input class="form-control" type="number" id="contact" name="contact" required autofocus>
+								<label for="city"><i class="fa fa-institution"></i> Evidence</label>
+								<input class="form-control" type="file" name="evidence" required autofocus ><br/>
+								<input type="submit" value="Send Payment Link" class="btn">
+
+								<!--<stripe-buy-button
+									buy-button-id="buy_btn_1P0CNaCFjCwtfQ99z9uHWRiA"
+									publishable-key="pk_test_51OYrKaCFjCwtfQ99n22gTCx8NftzfhVqRrorolgDF5ALvGEp1S7cDlGd8gPa2RAKm199vQZ2RAgusqVylfqARt0Q00lZiItKUB"
+								  >
+								  </stripe-buy-button> -->
+							</div>
+						</div>
+				    </form>
+				</div>
+			</div>
+		  </div></div>
+		</div>
+	</div>
+  </body>
+  <script>
+	// Disable past dates in datepickers 
+	
+	const sdateElement = document.getElementById('sdate');
+	const edateElement = document.getElementById('edate');
+	const today = new Date();
+
+	sdateElement.addEventListener('change', function() {
+	const selectedDate = new Date(this.value);
+	if (selectedDate < today) {
+		this.value = ''; // Clear the selection if it's a past date
+	 }
+	});
+
+	edateElement.addEventListener('change', function() {
+	const selectedDate = new Date(this.value);
+	if (selectedDate < today) {
+		this.value = ''; // Clear the selection if it's a past date
+	 }
+	});
+
+
+$(document).ready(function() {
+	const startDateInput = $('#sdate');
+	const endDateInput = $('#edate');
+	const priceInput = $('#price');
+	const depositInput = $('#deposit');
+	const amountInput = $('#amount');
+	const totalInput = $('#total');
+
+	function calculateTotal() {
+		const startDate = new Date(startDateInput.val());
+		const endDate = new Date(endDateInput.val());
+
+		if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+		return; // Handle invalid dates
+		}
+
+		const diffInMs = endDate - startDate;
+		const days = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+		
+		const pricePerNight = parseFloat(priceInput.val());
+		const deposit = parseFloat(depositInput.val());
+	
+		const amount = (days * pricePerNight);
+		console.log(amount);
+        amountInput.val(amount); // Format to 2 decimal places 
+
+		const total = (days * pricePerNight) + deposit;
+		totalInput.val(total); // Format to 2 decimal places 
+	}
+
+	// Event listeners for changes
+	startDateInput.on('change', calculateTotal);
+	endDateInput.on('change', calculateTotal);
+	priceInput.on('change', calculateTotal);
+	depositInput.on('change', calculateTotal);
+});
+  </script>
+</html>

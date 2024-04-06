@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pay With Card</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script> 
+  <style>
+    .row {
+  display: -ms-flexbox; /* IE10 */
+  display: flex;
+  -ms-flex-wrap: wrap; /* IE10 */
+  flex-wrap: wrap;
+  margin: 0 -16px;
+}
+
+.col-25 {
+  -ms-flex: 25%; /* IE10 */
+  flex: 25%;
+}
+
+.col-50 {
+  -ms-flex: 50%; /* IE10 */
+  flex: 50%;
+}
+
+.col-75 {
+  -ms-flex: 50%; /* IE10 */
+  flex: 50%;
+}
+
+.col-25,
+.col-50,
+.col-75 {
+  padding: 0 16px;
+}
+
+.container {
+  background-color: #f2f2f2;
+  padding: 5px 20px 15px 20px;
+  border: 1px solid lightgrey;
+  border-radius: 3px;
+}
+
+input[type=text] {
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+label {
+  margin-bottom: 10px;
+  display: block;
+}
+
+.icon-container {
+  margin-bottom: 20px;
+  padding: 7px 0;
+  font-size: 24px;
+}
+
+.btn {
+  background-color: #04AA6D;
+  color: white;
+  padding: 12px;
+  margin: 10px 0;
+  border: none;
+  width: 100%;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 17px;
+}
+
+.btn:hover {
+  background-color: #45a049;
+}
+
+span.price {
+  float: right;
+  color: grey;
+}
+
+/* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other (and change the direction - make the "cart" column go on top) */
+@media (max-width: 800px) {
+  .row {
+    flex-direction: column-reverse;
+  }
+  .col-25 {
+    margin-bottom: 20px;
+  }
+}
+  </style>
+</head>
+<body>
+  <div class="row">
+    <div class="col-75">
+      <div class="container">
+        
+        
+        <form method="POST" action="{% url 'payment_view' %}" class="was-validated" novalidate="">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-25">
+                  <input type="hidden" name="property_id" value="{{ property.id }}"> 
+                  <input type="hidden" name="rental_agency_id" value="{{ rental_agency_id }}"> 
+                  <div class="container">
+                    <h4>{{property.name}}</h4>
+                    <p> <img class="card-img-top" src="{{ property.image1.url }}" alt=""></p>
+                    <p><a href="#">Start</a> <span class="price">{{property.start_datetime}}</span></p>
+                    <p><a href="#">End</a> <span class="price">{{property.end_datetime}}</span></p>
+                    <p><a href="#">Duration</a> <span class="price"><input id="duration" name="duration"> Days </span></p>
+                    <p><a href="#">Price</a> <span class="price">£<input type="number" id="price" value="{{property.daily_price}}" disabled>(per day)</span></p>
+                    <p><a href="#">Deposit</a> <span class="price">£<input type="number" id="deposit" name="deposit" value="{{property.deposit}}" ></span></p>
+                    <hr>
+                    <p>Total <span class="price" style="color:black"><b>£<input type="number" name="amount" id="total" ></b></span></p>
+              </div>
+            </div>
+          
+
+            <div class="col-25">
+              <h3>Client Details</h3>
+              <label for="fname"><i class="fa fa-user"></i> Full Name</label>
+              <input class="form-control" type="text" id="name" name="name" required autofocus>
+              <label for="email"><i class="fa fa-envelope"></i> Email</label>
+              <input class="form-control" type="email" id="email" name="email" required autofocus>
+              <label for="adr"><i class="fa fa-address-card-o"></i> Contact</label>
+              <input class="form-control" type="number" id="contact" name="contact" required autofocus>
+              <label for="city"><i class="fa fa-institution"></i> Evidence</label>
+              <input class="form-control" type="file" name="evidence" required autofocus >
+            </div>
+  
+            <div class="col-25">
+              <h3>Payment</h3>
+                <label for="cname">Name on Card</label>
+                <input class="form-control" type="text" id="card-name" name="card_name" placeholder="John More Doe" required autofocus  >
+                <label for="ccnum">Card number</label>
+                <input class="form-control" type="text" id="card-number" name="card_number" placeholder="1234 5678 9012 3456" pattern="\d{4} \d{4} \d{4} \d{4}" title="Please enter a valid card number" required autofocus >
+                <label for="expmonth">Expiry Month</label>
+                <input class="form-control" type="number" id="card-expiry" name="card_month" placeholder="MM" pattern="01" required autofocus >
+                <label for="expmonth">Expiry Year</label>
+                <input class="form-control" type="number" id="card-expiry" name="card_year" placeholder="YYYY" pattern="2020" required autofocus >
+                <label for="cvv">CVV</label>
+                <input class="form-control" type="number" id="card-cvc" name="card_cvc" placeholder="352" required autofocus >
+                <input type="submit" value="Continue to checkout" class="btn">
+                </div>
+            </div>
+          </div>     
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+    $('#duration').on('input', function() {
+      const duration = parseFloat($('#duration').val()); // Assuming you already calculate duration
+      const deposit = parseFloat($('#deposit').val());
+      const rate = parseFloat($('#price').val()); // Assumes 'subtotal' holds the rate
+      
+      console.log("Duration: ", duration); 
+      console.log("Price Per Day: ", deposit);
+      console.log("Deposit: ", deposit);
+
+      const subtotal = duration * rate;
+      console.log(subtotal)
+      const total = subtotal + deposit; 
+      // console.log(total)
+      $('#total').val(total); // Output to 'subtotal' (might need adjusting)
+});
+
+
+document.getElementById('card-number').addEventListener('input', function (e) {
+    var target = e.target;
+    var position = target.selectionEnd;
+    var formatted = target.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
+    target.value = formatted;
+    target.setSelectionRange(position, position);
+});
+</script>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Active Dispute Table</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+  <div id="claims-active-container" class="container">
+    <p> Search your claim here...</p>
+    <div class="row mb-2">
+      <div class="col-sm-2">
+        <input type="text" class="form-control" id="search-active" placeholder="Reference Number">
+      </div>
+      <div class="col-sm-2">
+        <input type="text" id="listing" class="form-control" placeholder="Listing">
+      </div>
+      <div class="col-sm-2">
+        <input type="text" id="start_date" class="form-control" placeholder="Start Date">
+      </div>
+      <div class="col-sm-2">
+        <input type="text" id="client" class="form-control" placeholder="Client">
+      </div>
+      <div class="col-sm-2">
+        <button type="submit" id="search-button-active" class="btn btn-primary">Search</button>
+      </div>
+  </div>
+  <h2>Active Disputes</h2>
+  {% if active_claims %}
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Booking Reference Number</th>
+            <th scope="col">Date</th>
+            <th scope="col">Listing</th>
+            <th scope="col">Client</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          {% for claim in active_claims %}
+              <tr>
+                {% if claim.booking_transaction %}
+                  <td>{{ claim.booking_transaction.booking_reference_number }}</td> 
+                  <td>{{ claim.start_date }}</td>
+                  <td>{{ claim.name }}</td>
+                  <td>{{ claim.cname }}</td>
+                  <td><button class="check-status-button btn btn-primary btn-sm" data-reference-number="{{ claim.ref_number }}" data-toggle="modal" data-target="#claimStatusModal">Check Status</button></td>
+                {% endif %}
+              </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+  {% else %}
+      <p>No active claims found.</p>
+  {% endif %}
+ </div>
+
+ <div class="modal fade" id="claimStatusModal" tabindex="-1" role="dialog" aria-labelledby="claimStatusModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="claimStatusModalLabel">Claim Status</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="claimStatusMessage"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+  <div id="claims-resolved-container" class="container">
+    {% if resolved_claims %}
+        <h2>Resolved Disputes</h2>
+        <button id="archive-folder" href="/archive_resolved_disputes/" class="btn btn-secondary btn-sm float-right">Archive Folder</button>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Booking Reference Number</th>
+              <th scope="col">Date</th>
+              <th scope="col">Listing</th>
+              <th scope="col">Client</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+      <tbody id="tableBody">
+        {% for claim in resolved_claims %} 
+          <tr>
+            <td>{{ claim.ref_number }}</td> 
+            <td>{{ claim.start_date }}</td>
+            <td>{{ claim.name }}</td>
+            <td>{{ claim.cname }}</td>
+            <td><a id="view-button" href="/download_documents/{{ claim.ref_number }}/" data-reference-number="{{ claim.ref_number }}" class="btn btn-primary btn-sm">View</a></td>
+            <td><a id="archive-button" href="/archive_dispute/{{ claim.ref_number }}/" data-reference-number="{{ claim.ref_number }}" class="btn btn-secondary btn-sm float-right">Archive</a></td>
+          </tr>
+        {% endfor %} 
+      </tbody>
+    </table>
+  {% else %}
+      <p>No resolved claims found.</p>
+  {% endif %}
+  </div>
+</div>
+<script>
+$(document).ready(function() {
+        var jqy = jQuery.noConflict();
+        $('#search-button-active').click(function() {
+          var refNumber = $('#search-active').val();
+          $.ajax({
+              url: 'fetch_claim_details', // Your Django URL 
+              data: {'ref_number': refNumber},
+              success: function(data) {
+                  $('#listing').val(data.name);
+                  $('#start_date').val(data.start_date);
+                  $('#client').val(data.cname);
+                }
+              });
+            });
+         
+      $('#view-button').click(function(event) {
+          event.preventDefault();
+          const referenceNumber = $(this).data('reference-number');
+          const url = $(this).attr('href') + '?reference_number=' + referenceNumber;
+          $.ajax({
+              url: url ,
+              type: 'GET',
+              xhrFields: {
+                  responseType: 'blob'
+              },
+              success: function(response, status, xhr) {
+                  const contentType = xhr.getResponseHeader('Content-Type');
+                  const fileName = referenceNumber + '_document.zip'; 
+                  saveAs(response, fileName, contentType);
+              },
+              error: function(xhr, status, error) {
+                  console.error(error);
+              }
+          });
+      });
+
+     $('#archive-folder').click(function(event) {
+        event.preventDefault();
+        const url = '/archive_resolved_disputes/';
+        window.location.href = url;
+     });
+
+     $('#archive-button').click(function(event) { 
+        event.preventDefault();
+        const referenceNumber = $(this).data('reference-number');
+        console.log(referenceNumber);
+        const row = $(this).closest('tr'); 
+        const url = '/archive_dispute/' + referenceNumber + '/'; // Assuming Django URL pattern
+
+        $.ajax({
+            url: url, 
+            type: 'DELETE', // Use DELETE method
+            success: function(data) {
+                if (data.status === 'success') {
+                    row.hide(); 
+                   // window.location.href = '/dispute_resolution/';
+                } else { 
+                    console.error('Archiving failed'); 
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+          });  
+      });
+
+     $('.check-status-button').on('click', function() {
+        event.preventDefault();
+        const refNumber = $(this).data('reference-number');
+        const url = '/check_claim_status/'+ refNumber;
+        $.ajax({
+          url: url,
+          type: 'GET',
+          dataType: 'json',
+          success: function(data) {
+              var message = '';
+              if (data.opened) {
+                message += 'The claim has been opened.<br>';
+              }
+              if (data.reviewed) {
+                message += 'The claim has been reviewed by the adjudicator.<br>';
+              }
+              if (data.resolved) {
+                message += 'The claim is being resolved.<br>';
+              }
+              jqy('#claimStatusMessage').html(message);
+              jqy('#claimStatusModal').modal('show');
+          },
+          error: function(xhr, status, error) {
+              console.log(xhr.responseText);
+          }
+      });
+    });
+  });
+
+  function saveAs(blob, fileName, contentType) {
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = fileName;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+  }
+</script>
+</body>
+</html>
