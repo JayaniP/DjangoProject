@@ -679,14 +679,6 @@ def handle_payment_split(session):
             currency='GBP',
             destination=property_instance.rental_agency_id.stripe_account_id,
         )
-
-        # Charge application fee using Stripe Connect application_fee parameter
-        stripe.Charge.create(
-            amount= int(deposit_amount) * 100,
-            currency='GBP',
-            customer=session.customer, 
-            application_fee_amount=int(deposit_amount) * 100
-        )
         
         # Authorize deposit amount using PaymentIntent
         payment_intent = stripe.PaymentIntent.create(
