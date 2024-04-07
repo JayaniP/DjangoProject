@@ -693,6 +693,7 @@ def handle_payment_split(session):
             metadata={
                 'hold_until': (datetime.date.today() + datetime.timedelta(days=30)).isoformat()
             }
+        )
 
     except stripe.error.StripeError as e:
         # Handle specific Stripe errors (log, retry, notify)
