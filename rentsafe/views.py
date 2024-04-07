@@ -738,12 +738,13 @@ def handle_webhook(request):
     if event.type == 'checkout.session.completed':
         session = event.data.object
         handle_payment_split(session)  # Function to implement below
-    print('payment intent')
+   
     elif event.type == 'payment_intent.succeeded':
         intent = event.data.object
         transaction = Payment.objects.get(payment_intent_id=intent.id)
         transaction.status = 'Completed'
         transaction.save()
+        print('payment intent')
     return HttpResponse(status=200)
         
 def payment(request):
