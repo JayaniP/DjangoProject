@@ -681,7 +681,7 @@ def handle_payment_split(session):
         stripe.Transfer.create(
             amount= int(rental_amount) * 100,  # Convert to cents
             currency='GBP',
-            destination=property_instance.rental_agency_id.stripe_account_id,
+            destination=property_instance.rental_agency_id.stripe_account_id
         )
         
         # Authorize deposit amount using PaymentIntent
@@ -693,24 +693,6 @@ def handle_payment_split(session):
             metadata={
                 'hold_until': (datetime.date.today() + datetime.timedelta(days=30)).isoformat()
             }
-        )
-
-        # Update Transaction model 
-        payment, created = Payment.objects.get_or_create(
-            payment_reference_number=session.metadata.get('booking_reference_number'),
-            defaults={
-                'deposit_amount': deposit_amount,
-                'rental_amount': rental_amount,  
-                'total_amount': rental_amount + deposit_amount,
-                'status': 'Initiated', 
-                'payment_intent_id': payment_intent.id
-            }
-        )
-
-        if not created:
-            # Existing transaction; you might update status here if needed
-            payment.payment_intent_id = payment_intent.id
-            payment.save()
 
     except stripe.error.StripeError as e:
         # Handle specific Stripe errors (log, retry, notify)
