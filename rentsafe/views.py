@@ -697,7 +697,7 @@ def handle_payment_split(session):
 
         # Update Transaction model 
         payment, created = Payment.objects.get_or_create(
-            booking_reference_number=session.metadata.get('booking_reference_number'),
+            payment_reference_number=session.metadata.get('booking_reference_number'),
             defaults={
                 'deposit_amount': deposit_amount,
                 'rental_amount': rental_amount,  
