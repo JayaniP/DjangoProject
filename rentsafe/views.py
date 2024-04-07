@@ -667,6 +667,10 @@ def handle_payment_split(session):
     deposit_amount = session.metadata.get('deposit_amount')
     rental_amount = session.metadata.get('rental_amount')
 
+    print(property_id)
+    print(deposit_amount)
+    print(rental_amount)
+
     if not deposit_amount or not rental_amount:
         # Handle cases where metadata is missing
         print('Error: Missing deposit or total amount in metadata')
@@ -734,10 +738,10 @@ def handle_webhook(request):
     if event.type == 'checkout.session.completed':
         session = event.data.object
         handle_payment_split(session)  # Function to implement below
-
+    print('payment intent')
     elif event.type == 'payment_intent.succeeded':
         intent = event.data.object
-        transaction = Transaction.objects.get(payment_intent_id=intent.id)
+        transaction = Payment.objects.get(payment_intent_id=intent.id)
         transaction.status = 'Completed'
         transaction.save()
     return HttpResponse(status=200)
