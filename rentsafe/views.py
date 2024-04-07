@@ -282,20 +282,8 @@ def fetch_claim_details(request):
 
 
 def dispute_resolution(request):
-     if request.method == 'GET':
+      if request.method == 'GET':
         active_claims = ClaimDetail.objects.filter(claim_status__in=[ClaimDetail.STATUS_CHOICES[0][0], ClaimDetail.STATUS_CHOICES[1][0]])
-
-        for claim in active_claims:
-            client_detail = ClientDetail.objects.get(email=claim.cemail)
-            transaction = Transaction.objects.get(client=client_detail)
-            claim_detail = ClaimDetail.objects.get(booking_transaction=transaction)
-           
-            if claim.booking_transaction:  # Check if a related transaction exists
-                print("hI")
-                booking_reference_number = claim.booking_transaction.booking_reference_number
-            else:
-                booking_reference_number = "No transaction associated"
-
         resolved_claims = ClaimDetail.objects.filter(claim_status=ClaimDetail.STATUS_CHOICES[2][0])
 
         context = {
