@@ -282,9 +282,9 @@ def fetch_claim_details(request):
 
 
 def dispute_resolution(request):
-      if request.method == 'GET':
-        active_claims = ClaimDetail.objects.filter(claim_status__in=[ClaimDetail.STATUS_CHOICES[0][0], ClaimDetail.STATUS_CHOICES[1][0]])
-        resolved_claims = ClaimDetail.objects.filter(claim_status=ClaimDetail.STATUS_CHOICES[2][0])
+    if request.method == 'GET':
+        active_claims = ClaimDetail.objects.filter(claim_status__in=['AC', 'RI'])  # Active and Review
+        resolved_claims = ClaimDetail.objects.filter(claim_status='RE')
 
         context = {
             'active_claims': active_claims,
