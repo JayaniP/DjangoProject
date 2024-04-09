@@ -12,7 +12,7 @@
 </head>
 <body>
   <div id="claims-active-container" class="container">
-    <p> Search your claim here...</p>
+   <!--<p> Search your claim here...</p>
     <div class="row mb-2">
       <div class="col-sm-2">
         <input type="text" class="form-control" id="search-active" placeholder="Reference Number">
@@ -29,9 +29,9 @@
       <div class="col-sm-2">
         <button type="submit" id="search-button-active" class="btn btn-primary">Search</button>
       </div>
-  </div>
+  </div>-->
   <h2>Active Disputes</h2>
-  {% if active_claims %}
+    {% if active_claims %}
       <table class="table table-striped">
         <thead>
           <tr>
@@ -45,13 +45,12 @@
         <tbody id="tableBody">
           {% for claim in active_claims %}
               <tr>
-                {% if claim.booking_transaction %}
-                  <td>{{ claim.booking_transaction.booking_reference_number }}</td> 
+                  <td>{{ claim.ref_number }}</td> 
                   <td>{{ claim.start_date }}</td>
                   <td>{{ claim.name }}</td>
                   <td>{{ claim.cname }}</td>
                   <td><button class="check-status-button btn btn-primary btn-sm" data-reference-number="{{ claim.ref_number }}" data-toggle="modal" data-target="#claimStatusModal">Check Status</button></td>
-                {% endif %}
+             
               </tr>
           {% endfor %}
         </tbody>
